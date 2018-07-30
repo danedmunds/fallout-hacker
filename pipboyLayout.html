@@ -1,0 +1,250 @@
+<html>
+	<head>
+		<title>Data Miner</title>
+		<script language="javascript">
+			<!--
+var words = [];
+
+
+
+var attempts = [];
+var wordLength = -1;
+
+function listenForEnter(event) {
+	if(event.keyCode == 13){
+		enterWord();
+	}
+}
+
+function enterWord() {
+	var wordTextField = document.getElementById("wordText");
+	var word = wordTextField.value.toUpperCase();
+	document.getElementById("wordText").value = "";
+
+	if(wordLength == -1){
+		wordLength = word.length;
+	}
+
+	if(wordLength != word.length){
+		alert("The word: "+word+" is of length "+word.length+" expecting words of length "+wordLength);
+		return;
+	}
+
+	var unique = checkWordUniqueness(word);
+	if(!unique){
+		//already been entered, ignore it
+		return;
+	}
+
+	words[words.length] = word;
+
+	renderWordsArray();
+
+	setFocus(wordTextField);
+}
+
+function checkWordUniqueness(word) {
+	for(var i=0; i<words.length; ++i) {
+		if(words[i] == word){
+			return false;
+		}
+	}
+
+	return true;
+}
+
+function insertIntoWordsTable(word) {
+	var row = insertRowIntoWordsTable();
+	insertColumnIntoRow(row, word);
+}
+
+function insertColumnIntoRow(row, word){
+	var column = document.createElement("td");
+	row.appendChild(column);
+
+	var href = document.createElement("a");
+	column.appendChild(href);
+	column.appendChild(document.createTextNode(word));
+
+	var command = "javascript:clickedWord('" + word + "');";
+	column.setAttribute("onclick", command);
+	column.setAttribute("class", "options");
+}
+
+function insertRowIntoWordsTable(){
+	var wordsTableBody = document.getElementById("wordsTableBody");
+	
+	var row = document.createElement("tr");
+	wordsTableBody.appendChild(row);
+	
+	return row;
+}
+
+function hideWordEnteringArea() {
+}
+
+function clickedWord(word) {
+	hideWordEnteringArea();
+
+	removeFromPossibilties(word)
+	var count = window.prompt("How many letters matched?", "");
+	count = parseInt(count);
+	
+	//check for bad input
+	if(isNaN(count) || count < 0 || count > wordLength) {
+		alert("Invalid number, must be between 0 and "+wordLength);
+		return;
+	}
+
+	var choice = Object;
+	choice.count = count;
+	choice.word = word;
+	
+	attempts[attempts.length] = choice;
+
+	for(var x=0; x<attempts.length; ++x){
+		for(var y=words.length-1; y>=0; --y){
+//			alert(""+attempts[x].word+", "+words[y]+" = "+matchCount(attempts[x].word, words[y]));
+			if(attempts[x].count != matchCount(attempts[x].word, words[y])){
+				removeFromPossibilties(words[y]);
+			}
+		}
+	}
+
+	renderWordsArray();
+}
+
+function removeFromPossibilties(word){
+	for(var i=0; i<words.length; ++i){
+		if(words[i] == word){
+			words.splice(i, 1);
+		}
+	}
+
+}
+
+function matchCount(word1, word2) {
+	if(word1.length != word2.length) {
+		return -1;
+	}
+
+	var matchCount = 0;
+	for(var i=0; i<word1.length; ++i){
+		if(word1.charAt(i) == word2.charAt(i)) {
+			++matchCount;
+		}
+	}
+
+	return matchCount;
+}
+
+function renderWordsArray(){
+	var wordsTableBody = document.getElementById("wordsTableBody");
+	removeChildren(wordsTableBody);
+	
+	var row = insertRowIntoWordsTable();
+	for(var i=0; i<words.length; ++i){
+		
+		if(i % 3 == 0 && i != 0){
+			row = insertRowIntoWordsTable();
+		}
+		insertColumnIntoRow(row, words[i])
+	}
+}
+
+//http://northam.blogspot.com/2006/05/delete-all-children-nodes.html
+function removeChildren(node) {
+	while(node.firstChild) {
+		node.removeChild(node.firstChild);
+	}
+}
+			-->
+		</script>
+		<style type="text/css">
+			div.content {
+				width: 700px;
+				text-align: left;
+				background-color: black;
+				color: #A6AE87;
+			}
+			table.layout {
+				border: none;
+				border-collapse: collapse;
+				padding: 0px;
+				margin: 0px;
+			}
+			tr.layout {
+				border: none;
+				padding: 0px;
+				margin: 0px;
+			}
+			td.layout {
+				border: none;
+				padding: 0px;
+				margin: 0px;
+			}	
+			
+			td.options {
+				border: 2px solid #12F26D;
+				background-color: black;
+				color: #12F26D;
+				margin-left: 5px;
+				padding: 2px 5px 2px 5px;
+				font-size: 14pt;
+			}
+			
+			td.options:hover {
+				background-color: #015B27;
+			}
+			
+			td.screen {
+				background-color: black;
+				color: #12F26D;
+				font: bold 11pt/13pt monospace;
+				width: 570px; 
+				height: 418px;
+				vertical-align: top;
+				border: none;
+				padding: 0px;
+				margin: 0px;
+			}
+		</style>
+	</head>
+	<body>
+		<table class="layout">
+			<tr class="layout">
+				<td id="pipboyLeft" class="layout">
+					<img alt="left" src="images/pipboyLeft.jpg" />
+				</td>
+				<td id="pipboyCenter" class="layout">
+					<table class="layout">
+						<tr class="layout">
+							<td class="layout"><img alt="top" src="images/pipboyTop.jpg" /></td>
+						</tr>
+						<tr class="layout">
+							<td class="screen">
+								<img src="images/title.png"/>
+								<div id="wordEnterArea">
+									<p>Enter one word at a time</p>
+									<input id="wordText" type="text" size="20" onkeypress="javascript:listenForEnter(event)"/>
+									<button id="wordButton" onclick="javascript:enterWord()">Enter</button>
+								</div>
+								<br/><br/>
+								<table id="wordsTable" class="options">
+									<tbody id="wordsTableBody">
+									</tbody>
+								</table>
+							</td>
+						</tr>
+						<tr class="layout">
+							<td class="layout"><img alt="bottom" src="images/pipboyBottom.jpg" /></td>
+						</tr>
+					</table>
+				</td>
+				<td id="pipboyRight" class="layout">
+					<img alt="right" src="images/pipboyRight.jpg" />
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
